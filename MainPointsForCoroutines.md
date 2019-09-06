@@ -21,3 +21,8 @@ Dispatchers:
 1. Dispatcher.Default: coroutine builders use this dispatcher by default. It uses common pool of shared background threads. Better use for computation. It uses CPU a lot.
 2. Dispatcher.IO: uses shared pool of thread that designed for file IO intensive blocking operations or socket IO intensive blocking operations.
 3. Dispatcher.Unconfined: this is unrestricted dispatcher. It doesn't have something special as I understand. It shouldn't normally used in code.
+
+launch (Dispatcher.Default) {} uses the same dispatcher as GlobalScope.launch {}.
+
+What is a Job?
+It is a thing that user can cancel. It contains a child-parent hierarchy. 
