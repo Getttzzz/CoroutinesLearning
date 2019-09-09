@@ -31,3 +31,5 @@ What is a Channel?
 It is like Observable. It can produce a stream of data. Deferred emits a single value, Channel a stream.
 
 So what is a Flow? and Sequence???
+
+Flow can be cold. It's like rx...
