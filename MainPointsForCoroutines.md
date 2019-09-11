@@ -33,3 +33,33 @@ It is like Observable. It can produce a stream of data. Deferred emits a single 
 So what is a Flow? and Sequence???
 
 Flow can be cold. It's like rx...
+
+
+Nice example of using coroutines.
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_main)
+
+    val service = RetrofitFactory.makeRetrofitService()
+    CoroutineScope(Dispatchers.IO).launch {
+        val response = service.getPosts()
+        withContext(Dispatchers.Main) {
+            try {
+                if (response.isSuccessful) {
+                    //Do something with response e.g show to the UI.
+                } else {
+                    toast("Error: ${response.code()}")
+                }
+            } catch (e: HttpException) {
+                toast("Exception ${e.message}")
+            } catch (e: Throwable) {
+                toast("Ooops: Something else went wrong")
+            }
+        }
+    }
+}
+}
+```
