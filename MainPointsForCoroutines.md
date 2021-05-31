@@ -1,15 +1,16 @@
 # CoroutinesLearning
 This repo is a way I'm learning coroutines
 
-Coroutine is a light weight thread.
+Everything begins from coroutines builders.
 
-
-Coroutine builders:
+**Coroutines builders:**
 1. launch {}: Start a coroutine which doesn't have any result. Returns Job.
 2. async {}: Returns a single value result using Deferred. It is like Single in Rx as I understand. I've watched Roman Elizarov's video about intro to coroutines. He said that name "Deferred" had taken because it is a synonym of Feature or Promise. That means Deferred contains pending result. It is waiting to be executed. Deferred is also a Job. If you want, you can execute it using .await(). Also, if you want, you can cancel it.
 3. runBlocking {}: It starts a coroutine and blocks current thread until coroutines will be executed.
 
 delay() is a special suspending function that doesn't block a thread but block a coroutine.
+
+It's possible to run coroutine inside another coroutine. Hence, they will be linked with relation "Parent-Child"
 
 Every coroutine builder is an extension function for CoroutineScope.
 Coroutines inside GlobalScope have a lifetime like the whole app.
@@ -23,6 +24,8 @@ Dispatchers:
 3. Dispatcher.Unconfined: this is unrestricted dispatcher. It doesn't have something special as I understand. It shouldn't normally used in code.
 
 launch (Dispatcher.Default) {} uses the same dispatcher as GlobalScope.launch {}.
+
+What is a Continuation?
 
 What is a Job?
 It is a thing that user can cancel. It contains a child-parent hierarchy. 
@@ -63,3 +66,26 @@ class MainActivity : AppCompatActivity() {
 }
 }
 ```
+
+**How does coroutine work under the hood?**
+Android Studio executes code generation to transform code in the coroutine builder to Java class.
+All the code inside coroutine builder is separated to parts where Suspended function are the dividers. See example:
+```java
+class GeneratedCoroutineClass extends Continuation
+    int label;
+    String url;
+    
+    void invokeSuspend() {
+        switch(label) {
+            case 0: {
+                url = buildUrl(); //all the code before suspended function
+                label = 1;
+                download(url, **this**) //suspended function. Here we pass "this" as an Continuation interface
+                return;
+            }
+            case 1: {
+                toast("File is downloaded, url=" + url); //all the code after suspended function
+                return;
+            }
+        }
+    }
